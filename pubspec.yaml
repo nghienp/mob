@@ -35,6 +35,7 @@ dependencies:
   equatable: ^2.0.5
   flutter_bloc: ^8.1.2
   flutter_easyloading: ^3.0.5
+  stack: ^0.2.1
 
 dev_dependencies:
   flutter_test:

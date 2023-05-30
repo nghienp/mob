@@ -11,15 +11,38 @@ class ScoreBloc extends Bloc<ScoreEvent, ScoreState> {
   final FirebaseDataSource firebaseDataSource;
 
   ScoreBloc({required this.firebaseDataSource}) : super(ScoreInitial()) {
-    on<ScoreEvent>((event, emit) async {
+    // late List<ScoreModelResponse> listScore = [];
+
+    on<GetScoreEvent>((event, emit) async {
       emit(GetScoreLoading());
-      await firebaseDataSource.getAllData().then((rs) {
-        if (rs.isNotEmpty) {
-          emit(GetScoreSuccess(rs: rs));
-        } else if (rs.isEmpty) {
-          emit(GetScoreEmpty());
-        }
-      });
+      try {
+        await firebaseDataSource.getAllData().then((rs) {
+          if (rs.isNotEmpty) {
+            // listScore = rs;
+            emit(GetScoreSuccess(rs: rs));
+          } else if (rs.isEmpty) {
+            emit(GetScoreEmpty());
+          }
+        });
+      } catch (e) {
+        emit(GetScoreFail());
+      }
+    });
+    on<AddItemEvent>((event, emit) async {
+      try {
+        await firebaseDataSource.addItem(event.data);
+        emit(AddItemSuccess());
+      } catch (e) {
+        emit(GetScoreFail());
+      }
+    });
+    on<DeleteItemEvent>((event, emit) async {
+      try {
+        await firebaseDataSource.deleteItem(event.data);
+        emit(DeleteItemSuccess());
+      } catch (e) {
+        emit(GetScoreFail());
+      }
     });
   }
 }

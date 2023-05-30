@@ -8,6 +8,7 @@ part of 'score_model.dart';
 
 ScoreModelResponse _$ScoreModelResponseFromJson(Map<String, dynamic> json) =>
     ScoreModelResponse(
+      title: json['title'] as String,
       data: (json['data'] as List<dynamic>)
           .map((e) => ScoreModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -16,6 +17,7 @@ ScoreModelResponse _$ScoreModelResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ScoreModelResponseToJson(ScoreModelResponse instance) =>
     <String, dynamic>{
       'data': instance.data,
+      'title': instance.title,
     };
 
 ScoreModel _$ScoreModelFromJson(Map<String, dynamic> json) => ScoreModel(

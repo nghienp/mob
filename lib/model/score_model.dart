@@ -6,17 +6,16 @@ part 'score_model.g.dart';
 @JsonSerializable()
 class ScoreModelResponse extends Equatable {
   final List<ScoreModel> data;
+  final String title;
 
-  const ScoreModelResponse({required this.data});
+  const ScoreModelResponse({required this.title, required this.data});
 
-  factory ScoreModelResponse.fromJson(Map<String, dynamic> json) =>
-      _$ScoreModelResponseFromJson(json);
+  factory ScoreModelResponse.fromJson(Map<String, dynamic> json) => _$ScoreModelResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ScoreModelResponseToJson(this);
+  Map<String, dynamic> toJson() => {'title': title, 'data': data.map((e) => e.toJson()).toList()};
 
   @override
-  // TODO: implement props
-  List<Object?> get props => [data];
+  List<Object?> get props => [data, title];
 }
 
 @JsonSerializable()
@@ -26,12 +25,10 @@ class ScoreModel extends Equatable {
 
   const ScoreModel({required this.name, required this.score});
 
-  factory ScoreModel.fromJson(Map<String, dynamic> json) =>
-      _$ScoreModelFromJson(json);
+  factory ScoreModel.fromJson(Map<String, dynamic> json) => _$ScoreModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$ScoreModelToJson(this);
 
   @override
-  // TODO: implement props
   List<Object?> get props => [name, score];
 }
