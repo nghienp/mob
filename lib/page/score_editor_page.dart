@@ -33,7 +33,7 @@ class _ScoreEditorPageState extends State<ScoreEditorPage> {
     'nghiep',
     'Nghiep',
     'nghip',
-    'Nghịp',
+    'Nghip',
     'NGHIỆP',
     'NGHIEP',
     'NGHỊP',
