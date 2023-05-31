@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mob/datasource/firebase_datasource.dart';
+import 'package:mob/page/params_bloc/params_bloc.dart';
 import 'package:mob/page/score_bloc/score_bloc.dart';
 import 'package:mob/page/user_score_bloc/user_score_bloc.dart';
 
@@ -17,6 +18,7 @@ class InjectionContainer {
     sl.registerLazySingleton<FirebaseDataSource>(() => FirebaseDataSourceImpl());
     sl.registerFactory(() => ScoreBloc(firebaseDataSource: sl()));
     sl.registerFactory(() => UserScoreBloc(firebaseDataSource: sl()));
+    sl.registerFactory(() => ParamsBloc());
 
     if (kDebugMode) {
       log('Service Successfully started ...');

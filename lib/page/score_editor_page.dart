@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mob/page/params_bloc/params_bloc.dart';
 import 'package:mob/page/score_bloc/score_bloc.dart';
 import 'package:mob/page/user_score_bloc/user_score_bloc.dart';
 import 'package:mob/page/widget/app_button.dart';
@@ -24,21 +25,6 @@ class _ScoreEditorPageState extends State<ScoreEditorPage> {
   late ScoreModelResponse data = const ScoreModelResponse(title: '', data: []);
   late stack.Stack<ScoreModelResponse> backupData = stack.Stack();
   late String winner = '';
-  final List<String> avoid = [
-    '',
-    'nghiệp',
-    'Nghiệp',
-    'nghịp',
-    'Nghịp',
-    'nghiep',
-    'Nghiep',
-    'nghip',
-    'Nghip',
-    'NGHIỆP',
-    'NGHIEP',
-    'NGHỊP',
-    'NGHIP'
-  ];
 
   @override
   void initState() {
@@ -124,16 +110,30 @@ class _ScoreEditorPageState extends State<ScoreEditorPage> {
                         },
                       ),
                       const SizedBox(height: 50),
-                      !avoid.contains(winner)
-                          ? SizedBox(
-                              width: context.screenSize.width,
-                              child: Text(
-                                '${winner.toUpperCase()} mày điiiii',
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.red),
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          : const SizedBox(),
+                      BlocBuilder<ParamsBloc, ParamsState>(builder: (context, state) {
+                        if (state is ChangeWinnerSuccess) {
+                          return SizedBox(
+                            width: context.screenSize.width,
+                            child: Text(
+                              '${state.winner.toUpperCase()} mày điiiii',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.red),
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        } else {
+                          return const SizedBox();
+                        }
+                      }),
+                      // !avoid.contains(winner)
+                      //     ? SizedBox(
+                      //         width: context.screenSize.width,
+                      //         child: Text(
+                      //           '${winner.toUpperCase()} mày điiiii',
+                      //           style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.red),
+                      //           textAlign: TextAlign.center,
+                      //         ),
+                      //       )
+                      //     : const SizedBox(),
                       const Spacer(),
                       AppButton(
                         text: 'OK',
@@ -161,6 +161,7 @@ class _ScoreEditorPageState extends State<ScoreEditorPage> {
     }
 
     context.read<ScoreBloc>().add(AddItemEvent(data: data));
+    context.read<ParamsBloc>().add(ChangeWinnerEvent(winner: winner));
     setState(() {});
   }
 

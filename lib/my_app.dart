@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mob/page/home_page.dart';
+import 'package:mob/page/params_bloc/params_bloc.dart';
 import 'package:mob/page/score_bloc/score_bloc.dart';
 import 'package:mob/page/user_score_bloc/user_score_bloc.dart';
 
@@ -20,6 +21,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => sl<UserScoreBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<ParamsBloc>(),
         ),
       ],
       child: GestureDetector(
