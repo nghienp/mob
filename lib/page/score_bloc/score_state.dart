@@ -17,6 +17,13 @@ class GetScoreSuccess extends ScoreState {
   GetScoreSuccess({required this.rs});
 }
 
+class GetTempState extends ScoreState {
+  final int sum;
+  final List<ScoreModel> data;
+
+  GetTempState({required this.sum, required this.data});
+}
+
 class GetScoreEmpty extends ScoreState {}
 
 class GetScoreFail extends ScoreState {}

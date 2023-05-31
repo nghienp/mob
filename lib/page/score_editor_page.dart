@@ -23,6 +23,22 @@ class _ScoreEditorPageState extends State<ScoreEditorPage> {
   late int sum = 0;
   late ScoreModelResponse data = const ScoreModelResponse(title: '', data: []);
   late stack.Stack<ScoreModelResponse> backupData = stack.Stack();
+  late String winner = '';
+  final List<String> avoid = [
+    '',
+    'nghiệp',
+    'Nghiệp',
+    'nghịp',
+    'Nghịp',
+    'nghiep',
+    'Nghiep',
+    'nghip',
+    'Nghịp',
+    'NGHIỆP',
+    'NGHIEP',
+    'NGHỊP',
+    'NGHIP'
+  ];
 
   @override
   void initState() {
@@ -32,86 +48,128 @@ class _ScoreEditorPageState extends State<ScoreEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(data.title),
-        actions: const [
-          InkWell(
-            child: Icon(Icons.settings_backup_restore),
-          ),
-          SizedBox(width: 16)
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: BlocListener<UserScoreBloc, UserScoreState>(
-              listener: (context, state) {
-                if (state is UserScoreSuccess) {
-                  context.read<ScoreBloc>().add(GetScoreEvent());
-                }
-              },
-              child: BlocListener<ScoreBloc, ScoreState>(
+    return WillPopScope(
+      onWillPop: () async {
+        context.read<ScoreBloc>().add(GetScoreEvent());
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(data.title),
+          actions: const [
+            InkWell(
+              child: Icon(Icons.settings_backup_restore),
+            ),
+            SizedBox(width: 16)
+          ],
+        ),
+        body: SafeArea(
+          child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: BlocListener<UserScoreBloc, UserScoreState>(
                 listener: (context, state) {
-                  if (state is GetScoreSuccess) {
-                    data = state.rs[widget.index];
+                  if (state is UserScoreSuccess) {
+                    context.read<ScoreBloc>().add(GetScoreEvent());
                   }
                 },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListView.builder(
-                        shrinkWrap: true,
-                        physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                        itemCount: data.data.length,
-                        itemBuilder: (context, i) {
-                          return Focus(
-                            onFocusChange: (hasFocus) {
-                              if (!hasFocus) {
-                                editUserScore();
-                              }
-                            },
-                            child: UserScoreWidget(
-                              data: data.data[i],
-                              onChange: (scoreModel) {
-                                data.data[i] = scoreModel;
+                child: BlocListener<ScoreBloc, ScoreState>(
+                  listener: (context, state) {
+                    if (state is GetScoreSuccess) {
+                      data = state.rs[widget.index];
+                    }
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListView.builder(
+                          shrinkWrap: true,
+                          physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                          itemCount: data.data.length,
+                          itemBuilder: (context, i) {
+                            return Focus(
+                              onFocusChange: (hasFocus) {
+                                if (!hasFocus) {
+                                  tempEdit();
+                                  // setState(() {});
+                                }
                               },
-                              onSubmitted: (scoreModel) {
-                                editUserScore();
-                                setState(() {});
-                              },
-                              index1: widget.index,
-                              index2: i,
-                            ),
-                          );
-                        }),
-                    Text(
-                      'Tổng: ${sum == 0 ? sum : '$sum Sai cmmr'}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const Spacer(),
-                    AppButton(
-                      text: 'OK',
-                      onPressed: () {
-                        editUserScore();
-                        setState(() {});
-                      },
-                    )
-                  ],
+                              child: UserScoreWidget(
+                                data: data.data[i],
+                                onChange: (scoreModel) {
+                                  data.data[i] = scoreModel;
+                                },
+                                onSubmitted: (scoreModel) {
+                                  editUserScore();
+                                },
+                                index1: widget.index,
+                                index2: i,
+                              ),
+                            );
+                          }),
+                      const SizedBox(height: 20),
+                      BlocBuilder<ScoreBloc, ScoreState>(
+                        builder: (context, state) {
+                          if (state is GetTempState) {
+                            return Text(
+                              'Tổng: ${state.sum == 0 ? state.sum : '${state.sum} Sai rồi thằng lz'}',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            );
+                          } else {
+                            return Text(
+                              'Tổng: ${sum == 0 ? sum : '$sum Sai rồi thằng lz'}',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            );
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 50),
+                      !avoid.contains(winner)
+                          ? SizedBox(
+                              width: context.screenSize.width,
+                              child: Text(
+                                '${winner.toUpperCase()} mày điiiii',
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.red),
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          : const SizedBox(),
+                      const Spacer(),
+                      AppButton(
+                        text: 'OK',
+                        onPressed: () {
+                          editUserScore();
+                        },
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            )),
+              )),
+        ),
       ),
     );
   }
 
   editUserScore() {
     sum = 0;
+    ScoreModel min = data.data.first;
+
+    for (var element in data.data) {
+      sum += element.score;
+      if (element.score < min.score) min = element;
+      winner = min.name;
+    }
+
+    context.read<ScoreBloc>().add(AddItemEvent(data: data));
+    setState(() {});
+  }
+
+  tempEdit() {
+    sum = 0;
     for (var element in data.data) {
       sum += element.score;
     }
-    context.read<ScoreBloc>().add(AddItemEvent(data: data));
+    context.read<ScoreBloc>().add(TempData(data: data.data, sum: sum));
   }
 }
 

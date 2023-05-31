@@ -111,6 +111,12 @@ class _UserScoreWidgetState extends State<UserScoreWidget> {
                               .textTheme
                               .titleLarge
                               ?.copyWith(fontWeight: FontWeight.w600, color: Colors.red));
+                    } else if (state is GetTempState) {
+                      return Text(state.data[widget.index2].score.toString(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w600, color: Colors.red));
                     } else {
                       return Text(widget.data.score.toString(),
                           style: Theme.of(context)
@@ -142,6 +148,12 @@ class _UserScoreWidgetState extends State<UserScoreWidget> {
                       // _currentScore = 0;
                       // _scoreController.text = '';
                     }),
+                    // onEditingComplete: () {
+                    //   _currentScore = widget.data.score +
+                    //       (int.tryParse(_scoreController.text != '' ? _scoreController.text : '0') ?? 0);
+                    //   rs = ScoreModel(name: _currentName, score: _currentScore);
+                    //   widget.onSubmitted(rs);
+                    // },
                     // onTapOutside: (event) {
                     //   setState(() {
                     //     _currentScore += int.tryParse(_scoreController.text != '' ? _scoreController.text : '0') ?? 0;
@@ -153,7 +165,7 @@ class _UserScoreWidgetState extends State<UserScoreWidget> {
                     keyboardType: const TextInputType.numberWithOptions(signed: true),
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp("^-?\\d*")),
-                      LengthLimitingTextInputFormatter(4),
+                      LengthLimitingTextInputFormatter(6),
                     ],
                     decoration: InputDecoration(
                       hintText: 'Nhập đỉm...',

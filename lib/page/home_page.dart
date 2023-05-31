@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:mob/page/score_bloc/score_bloc.dart';
 import 'package:mob/page/score_editor_page.dart';
+import 'package:mob/page/widget/app_button.dart';
 import 'package:mob/page/widget/score_card.dart';
 
 import '../model/score_model.dart';
@@ -25,14 +27,17 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('Money over bitches'),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
             context.read<ScoreBloc>().add(GetScoreEvent());
           },
           child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
+            physics: const ClampingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             child: BlocListener<ScoreBloc, ScoreState>(
                 listener: (context, state) {
                   if (state is GetScoreSuccess) {
@@ -49,39 +54,42 @@ class _HomePageState extends State<HomePage> {
                     context.read<ScoreBloc>().add(GetScoreEvent());
                   } else {}
                 },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ListView.builder(
-                      physics: const ClampingScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: listScore.length,
-                      itemBuilder: (context, i) {
-                        return ScoreCard(
-                          title: listScore[i].title ?? '',
-                          onDismissed: (direction) {
-                            context.read<ScoreBloc>().add(DeleteItemEvent(data: listScore[i]));
-                            setState(() {
-                              listScore.remove(listScore[i]);
-                            });
-                          },
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ScoreEditorPage(
-                                      data: listScore[i],
-                                      index: i,
-                                    )));
-                          },
-                        );
-                      },
-                    ),
-                    Center(
-                      child: InkWell(
-                        onTap: addItem,
-                        child: const Icon(Icons.add_rounded),
+                child: SizedBox(
+                  height: context.screenSize.height,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListView.builder(
+                        physics: const ClampingScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: listScore.length,
+                        itemBuilder: (context, i) {
+                          return ScoreCard(
+                            title: listScore[i].title ?? '',
+                            onDismissed: (direction) {
+                              context.read<ScoreBloc>().add(DeleteItemEvent(data: listScore[i]));
+                              setState(() {
+                                listScore.remove(listScore[i]);
+                              });
+                            },
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ScoreEditorPage(
+                                        data: listScore[i],
+                                        index: i,
+                                      )));
+                            },
+                          );
+                        },
                       ),
-                    )
-                  ],
+                      Center(
+                        child: InkWell(
+                          onTap: addItem,
+                          child: const Icon(Icons.add_rounded),
+                        ),
+                      )
+                    ],
+                  ),
                 )),
           ),
         ),
@@ -90,7 +98,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   addItem() {
-    String docId = DateTime.now().toString();
+    String docId = DateFormat("dd-MM-yyyy HH:mm").format(DateTime.now()).toString();
     context.read<ScoreBloc>().add(AddItemEvent(
             data: ScoreModelResponse(title: docId, data: const [
           ScoreModel(name: '', score: 0),

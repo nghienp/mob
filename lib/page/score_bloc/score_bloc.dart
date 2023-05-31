@@ -44,5 +44,12 @@ class ScoreBloc extends Bloc<ScoreEvent, ScoreState> {
         emit(GetScoreFail());
       }
     });
+    on<TempData>((event, emit) async {
+      try {
+        emit(GetTempState(sum: event.sum, data: event.data));
+      } catch (e) {
+        emit(GetScoreFail());
+      }
+    });
   }
 }
